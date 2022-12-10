@@ -1,0 +1,69 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+class GameState{
+- Map<id, int> playerLives
+- Stage stage
+- boolean isPaused
+- colideEntities()
++ moveShip(int direction)
++ pauseGame()
++ saveGame()
+}
+
+GameState <-- Entity
+interface Entity{
++getId()
++getType()
+}
+
+Entity <|.. Ship
+class Ship{
+- int Id
+- EntityType entityType
+- Weapon weapon
++ useWeapon
+}
+
+Weapon --> Shot
+Ship <--Weapon
+class Weapon{
+- ShotType shotType
++ createWeapon()
++ shoot()
+}
+
+Entity <|.. Shot
+class Shot{
+- int Id
+- EntityType entityType
+- int damageOutPut
+- ShotType shotType
+}
+
+Stage -> GameState
+class Stage{
++ generateAsteroids()
+}
+
+Entity <|.. Asteroid
+class Asteroid{
+- int Id
+- EntityType entityType
+- int asteroidIntegrity
+}
+
+Weapon <-- ShotType
+enum ShotType{
+BULLET
+SPREAD
+LASER
+}
+
+GameState <- EntityType
+enum EntityType{
+SHOT
+SHIP
+ASTEROID
+}
+@enduml
