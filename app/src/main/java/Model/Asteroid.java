@@ -2,27 +2,13 @@ package Model;
 
 import Model.Enums.EntityType;
 
-public class Asteroid implements Entity{
-
-    private Long id;
-
-    EntityType type;
+public class Asteroid extends Entity{
 
     private int integrity;
 
-    public Asteroid(int integrity) {
-        this.type = EntityType.ASTEROID;
+    public Asteroid(String id, int integrity) {
+        super(id, EntityType.ASTEROID);
         this.integrity = integrity;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public EntityType getType() {
-        return type;
     }
 
     public int getIntegrity() {

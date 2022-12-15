@@ -1,0 +1,3 @@
+numberOfPlayers:1
+defaultLives:3
+keyBoardConfig:up=W,down=S,left=A,right=D,shoot=H

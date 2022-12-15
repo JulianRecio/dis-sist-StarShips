@@ -11,8 +11,8 @@ public class Weapon {
         this.shotType = shotType;
     }
 
-    public Shot shoot(){
-        return new Shot(shotType);
+    public Shot shoot(String id){
+        return new Shot(id,shotType);
     }
 
 }

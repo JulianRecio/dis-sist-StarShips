@@ -12,7 +12,7 @@ class GameState{
 }
 
 GameState <-- Entity
-interface Entity{
+abstract class Entity{
 +getId()
 +getType()
 }
@@ -22,7 +22,14 @@ class Ship{
 - int Id
 - EntityType entityType
 - Weapon weapon
-+ useWeapon
+- Position position
+- Position targetPosition
+- double speed
+- isAccelerating
++ useWeapon()
++ accelerate()
++ isMoving()
++ isAccelerating()
 }
 
 Weapon --> Shot
