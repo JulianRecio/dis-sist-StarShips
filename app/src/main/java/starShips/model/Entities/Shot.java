@@ -31,13 +31,13 @@ public class Shot extends Entity {
     }
 
     @Override
-    public Entity update() {
+    public Shot update() {
         if (isInsideBounds()){
             return continueOverTrajectory();
         }else return null;
     }
 
-    private Entity continueOverTrajectory() {
+    private Shot continueOverTrajectory() {
         double nextX =  getEntityPosition().getX() - 4 * Math.sin(Math.PI * 2 * getTrajectory() / 360);
         double nextY =  getEntityPosition().getY() + 4 * Math.cos(Math.PI * 2 * getTrajectory() / 360);
         return new Shot(getId(), new Position(nextX, nextY), getRotation(), getSpeed(), getHeight(),getWidth(),getTrajectory(),getShooterId(),getShotType(),getDamageOutput());

@@ -73,14 +73,6 @@ public abstract class Entity {
         return trajectory;
     }
 
-    public void setRotation(double rotation) {
-        this.rotation = rotation;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
     public HitBoxType getHitBoxType() {
         return hitBoxType;
     }

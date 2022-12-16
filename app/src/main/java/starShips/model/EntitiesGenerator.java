@@ -24,7 +24,7 @@ public class EntitiesGenerator {
             String id = "starship-" + i;
             double xPosition = ((800 / amountOfShips) * i)/2;
             Player player = players.get(i-1);
-            Ship ship = new Ship(id, EntityType.SHIP,new Position(xPosition, 300), 180, 0,40, 40,0, HitBoxType.TRIANGULAR,new Weapon(shotTypes.get("shotType-"+i), System.currentTimeMillis()), player.getId(), false);
+            Ship ship = new Ship(id,new Position(xPosition, 300), 180, 0,40, 40,0, new Weapon(shotTypes.get("shotType-"+i), System.currentTimeMillis()), player.getId(), false);
             objects.add(ship);
         }
     }

@@ -7,7 +7,6 @@ import starShips.model.Entities.Entity;
 import starShips.model.Entities.Ship;
 import starShips.model.Entities.Shot;
 import starShips.model.Enums.EntityType;
-import starShips.model.Enums.ShotType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class CollisionManager {
             if (entity.getId().equals(ship.getId())){
                 nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives() - 1, shipPlayer.getPlayerShip());
                 if (nextStatePlayer.getLives() > 0){
-                    nextStateEntities.add(new Ship(ship.getId(), ship.getType(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(), ship.getHitBoxType(), ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
+                    nextStateEntities.add(new Ship(ship.getId(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(),  ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
                 } else{
                     game.addEliminated(entity.getId());
                     nextStatePlayer = null;
@@ -107,7 +106,7 @@ public class CollisionManager {
             if (entity.getId().equals(ship.getId())){
                 nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives() - 1, shipPlayer.getPlayerShip());
                 if (nextStatePlayer.getLives() > 0){
-                    nextStateEntities.add(new Ship(ship.getId(), ship.getType(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(), ship.getHitBoxType(), ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
+                    nextStateEntities.add(new Ship(ship.getId(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(),  ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
                 } else{
                     game.addEliminated(entity.getId());
                     nextStatePlayer = null;

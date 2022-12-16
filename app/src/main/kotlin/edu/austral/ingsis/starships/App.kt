@@ -3,10 +3,6 @@ package edu.austral.ingsis.starships
 import starShips.model.Entities.Entity
 import starShips.model.Enums.EntityType
 import starShips.model.Enums.HitBoxType
-import edu.austral.ingsis.starships.Starships.Companion.ASTEROID_IMG
-import edu.austral.ingsis.starships.Starships.Companion.SHOT_IMG
-import edu.austral.ingsis.starships.Starships.Companion.STARSHIP_P1
-import edu.austral.ingsis.starships.Starships.Companion.STARSHIP_P2
 import edu.austral.ingsis.starships.ui.*
 import javafx.application.Application
 import javafx.application.Application.launch
@@ -57,8 +53,17 @@ class Starships() : Application() {
         primaryStage.show()
     }
 
+    fun getImage(entity: Entity): ImageRef?{
+        if (entity.type == EntityType.SHIP){
+            return if (entity.id.equals("starship-1")) STARSHIP_P1
+            else STARSHIP_P2
+        }
+        return if (entity.type == EntityType.SHOT) SHOT_IMG
+        else ASTEROID_IMG
+    }
+
     private fun menuScene(primaryStage: Stage, pane: StackPane): Scene {
-        val title = Label("Starships")
+        val title = Label("StarShips")
 
         val newGame = Label("New Game")
         newGame.setOnMouseClicked {
@@ -76,14 +81,38 @@ class Starships() : Application() {
         vLayout.alignment = Pos.CENTER
         vLayout.children.addAll(title, newGame)
 
-        return Scene(vLayout)
+        val menu = Scene(vLayout)
+        menu.stylesheets.add(this::class.java.classLoader.getResource("styles.css")?.toString())
+        return menu
 
     }
+
+    fun pauseScene(primaryStage: Stage, pane: StackPane, menu: Scene): Scene {
+        val unpause = Label("Continue Game")
+
+        unpause.setOnMouseClicked {
+            primaryStage.scene = menu
+            primaryStage.scene.root = pane
+            game.pauseOrUnPause()
+        }
+
+        val exitGame = Label("Exit game")
+        exitGame.setOnMouseClicked {
+            stop()
+        }
+        val vLayout = VBox(50.0)
+        vLayout.id = "pause"
+        vLayout.alignment = Pos.CENTER
+        vLayout.children.addAll(unpause, exitGame)
+        return Scene(vLayout)
+    }
+
+
 
     private fun addEntities() {
         val entities = game.entities
         for (entity in entities){
-            facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x,entity.entityPosition.y,5.0,5.0, entity.rotation, readHitBox(entity.hitBoxType), getImage(entity))
+            facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x,entity.entityPosition.y,entity.height, entity.width, entity.rotation, readHitBox(entity.hitBoxType), getImage(entity))
         }
     }
 
@@ -117,7 +146,6 @@ class TimeListener(
     private val facade: ElementsViewFacade,
     private val starship: Starships
 ) : EventListener<TimePassed> {
-
     override fun handle(event: TimePassed) {
         if (game.isOver){
             starship.stop()
@@ -130,24 +158,23 @@ class TimeListener(
                 element.x.set(entity.entityPosition.x)
                 element.y.set(entity.entityPosition.y)
                 element.rotationInDegrees.set(entity.rotation)
-                element.height.set(5.0)
-                element.width.set(5.0)
+                element.height.set(entity.height)
+                element.width.set(entity.width)
             }
             else{
-                facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x, entity.entityPosition.y, 5.0, 5.0,entity.rotation,starship.readHitBox(entity.hitBoxType), getImage(entity))
+                facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x, entity.entityPosition.y, 5.0, 5.0,entity.rotation,starship.readHitBox(entity.hitBoxType), starship.getImage(entity))
+            }
+        }
+        val eliminatedEntities = game.eliminated
+
+        for (eliminated in eliminatedEntities){
+            if (elements.containsKey(eliminated)){
+                facade.elements[eliminated] = null
             }
         }
     }
 }
 
-private fun getImage(entity: Entity): ImageRef?{
-    if (entity.type == EntityType.SHIP){
-        return if (entity.id.equals("starship-1")) STARSHIP_P1
-        else STARSHIP_P2
-    }
-    return if (entity.type == EntityType.SHOT) SHOT_IMG
-    else ASTEROID_IMG
-}
 
 class CollisionListener(
     private val game: Game
@@ -162,7 +189,7 @@ class KeyPressedListener(
     private val game: Game,
     private val pane: StackPane,
     private val primaryStage: Stage,
-    private val starship: Starships,
+    private val starships: Starships,
     private val menu: Scene
 ): EventListener<KeyPressed> {
 
@@ -171,11 +198,14 @@ class KeyPressedListener(
         when(event.key){
             map["accelerate-1"] ->game.accelerateShip("starship-1", true)
             map["stop-1"] -> game.accelerateShip("starship-1", false)
-            map["rotate-left-1"] -> game.turnShip("starship-1", -5.0)
-            map["rotate-right-1"] -> game.turnShip("starship-1", 5.0)
+            map["left-1"] -> game.turnShip("starship-1", -5.0)
+            map["right-1"] -> game.turnShip("starship-1", 5.0)
             map["shoot-1"] -> game.shoot("starship-1")
             KeyCode.P ->{
                 game.pauseOrUnPause()
+               if (game.isPaused){
+                   primaryStage.scene = starships.pauseScene(primaryStage, pane, menu)
+               }
             }
             else ->{}
         }

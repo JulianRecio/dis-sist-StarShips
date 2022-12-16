@@ -139,6 +139,7 @@ public class Game {
     }
 
     private void updateGameState(List<Entity> nextStateEntities, List<Player> newPlayers) {
+        this.gameState = new GameState(nextStateEntities, newPlayers);
     }
 
     public void addEliminated(String id) {
