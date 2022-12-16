@@ -1,4 +1,4 @@
-package Model.Enums;
+package starShips.model.Enums;
 
 public enum HitBoxType {
     RECTANGULAR, ELLIPTICAL, TRIANGULAR

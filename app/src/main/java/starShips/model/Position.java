@@ -1,4 +1,4 @@
-package Movement;
+package starShips.model;
 
 public class Position {
     private double x;

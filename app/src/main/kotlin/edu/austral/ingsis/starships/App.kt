@@ -1,23 +1,25 @@
 package edu.austral.ingsis.starships
 
-import GameState
-import Model.Entity
-import Model.Enums.ButtonKey
-import Model.Enums.EntityType
-import Model.Enums.HitBoxType
+import starShips.model.Entities.Entity
+import starShips.model.Enums.EntityType
+import starShips.model.Enums.HitBoxType
 import edu.austral.ingsis.starships.Starships.Companion.ASTEROID_IMG
 import edu.austral.ingsis.starships.Starships.Companion.SHOT_IMG
-import edu.austral.ingsis.starships.Starships.Companion.STARSHIP_IMAGE_REF
+import edu.austral.ingsis.starships.Starships.Companion.STARSHIP_P1
+import edu.austral.ingsis.starships.Starships.Companion.STARSHIP_P2
 import edu.austral.ingsis.starships.ui.*
 import javafx.application.Application
 import javafx.application.Application.launch
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.Scene
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import starShips.Game
+import kotlin.system.exitProcess
 
 fun main() {
     launch(Starships::class.java)
@@ -29,10 +31,11 @@ class Starships() : Application() {
     private val keyTracker = KeyTracker()
 
     companion object {
-        val STARSHIP_IMAGE_REF = ImageRef("starship", 70.0, 70.0)
+        val STARSHIP_P1 = ImageRef("starship1", 70.0, 70.0)
+        val STARSHIP_P2 = ImageRef("starship2", 70.0, 70.0)
         val SHOT_IMG = ImageRef("shot",70.0,70.0)
         val ASTEROID_IMG = ImageRef("asteroid", 70.0,70.0)
-        val gameState = GameState()
+        val game = Game()
     }
 
     override fun start(primaryStage: Stage) {
@@ -40,12 +43,11 @@ class Starships() : Application() {
         val pane = gameScene()
         val menu = menuScene(primaryStage, pane)
 
-        facade.timeListenable.addEventListener(TimeListener(facade.elements, gameState, facade, this))
-        facade.collisionsListenable.addEventListener(CollisionListener(gameState))
-        keyTracker.keyPressedListenable.addEventListener(KeyPressedListener(gameState, pane, primaryStage, this))
+        facade.timeListenable.addEventListener(TimeListener(facade.elements, game, facade, this))
+        facade.collisionsListenable.addEventListener(CollisionListener(game))
+        keyTracker.keyPressedListenable.addEventListener(KeyPressedListener(game, pane, primaryStage, this, menu))
 
         keyTracker.scene = menu
-
         primaryStage.scene = menu
         primaryStage.height = 800.0
         primaryStage.width = 800.0
@@ -61,7 +63,8 @@ class Starships() : Application() {
         val newGame = Label("New Game")
         newGame.setOnMouseClicked {
             primaryStage.scene.root = pane
-            gameState.start()
+            game.start(false)
+            addEntities()
         }
 
         val hLayout = HBox(70.0)
@@ -77,6 +80,13 @@ class Starships() : Application() {
 
     }
 
+    private fun addEntities() {
+        val entities = game.entities
+        for (entity in entities){
+            facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x,entity.entityPosition.y,5.0,5.0, entity.rotation, readHitBox(entity.hitBoxType), getImage(entity))
+        }
+    }
+
     private fun gameScene(): StackPane {
         val pane = StackPane()
         val root = facade.view
@@ -89,6 +99,7 @@ class Starships() : Application() {
     override fun stop() {
         facade.stop()
         keyTracker.stop()
+        exitProcess(0)
     }
 
     fun readHitBox(hitBoxType: HitBoxType): ElementColliderType {
@@ -102,13 +113,17 @@ class Starships() : Application() {
 
 class TimeListener(
     private val elements: Map<String, ElementModel>,
-    private val gameState: GameState,
+    private val game: Game,
     private val facade: ElementsViewFacade,
     private val starship: Starships
 ) : EventListener<TimePassed> {
 
     override fun handle(event: TimePassed) {
-        val entities = gameState.entities ?: return;
+        if (game.isOver){
+            starship.stop()
+        }
+        game.update()
+        val entities = game.entities ?: return;
         for (entity in entities){
             val element = elements[entity.id]
             if (element != null){
@@ -123,19 +138,19 @@ class TimeListener(
             }
         }
     }
+}
 
-    private fun getImage(entity: Entity): ImageRef?{
-        return when(entity.type){
-            EntityType.SHIP -> STARSHIP_IMAGE_REF
-            EntityType.SHOT -> SHOT_IMG
-            EntityType.ASTEROID -> ASTEROID_IMG
-        }
+private fun getImage(entity: Entity): ImageRef?{
+    if (entity.type == EntityType.SHIP){
+        return if (entity.id.equals("starship-1")) STARSHIP_P1
+        else STARSHIP_P2
     }
-
+    return if (entity.type == EntityType.SHOT) SHOT_IMG
+    else ASTEROID_IMG
 }
 
 class CollisionListener(
-    private val gameState: GameState
+    private val game: Game
 ) : EventListener<Collision> {
     override fun handle(event: Collision) {
         println("${event.element1Id} ${event.element2Id}")
@@ -144,22 +159,28 @@ class CollisionListener(
 }
 
 class KeyPressedListener(
-    private val gameState: GameState,
+    private val game: Game,
     private val pane: StackPane,
     private val primaryStage: Stage,
-    private val starship: Starships
+    private val starship: Starships,
+    private val menu: Scene
 ): EventListener<KeyPressed> {
 
     override fun handle(event: KeyPressed) {
-        val map = gameState.config.keyBoardConfig
+        val map = game.keyBoardConfig
         when(event.key){
-            map[ButtonKey.UP] -> gameState.controlShip("ship1", ButtonKey.UP)
-            map[ButtonKey.DOWN] -> gameState.controlShip("ship1", ButtonKey.DOWN)
-            map[ButtonKey.LEFT] -> gameState.controlShip("ship1", ButtonKey.LEFT)
-            map[ButtonKey.RIGHT] -> gameState.controlShip("ship1", ButtonKey.RIGHT)
-            map[ButtonKey.SHOOT] -> gameState.controlShip("ship1", ButtonKey.SHOOT)
-            else -> {}
+            map["accelerate-1"] ->game.accelerateShip("starship-1", true)
+            map["stop-1"] -> game.accelerateShip("starship-1", false)
+            map["rotate-left-1"] -> game.turnShip("starship-1", -5.0)
+            map["rotate-right-1"] -> game.turnShip("starship-1", 5.0)
+            map["shoot-1"] -> game.shoot("starship-1")
+            KeyCode.P ->{
+                game.pauseOrUnPause()
+            }
+            else ->{}
         }
+
+
     }
 
 }
