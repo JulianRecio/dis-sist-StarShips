@@ -38,6 +38,8 @@ class Starships() : Application() {
         
         val pane = gameScene()
         val menu = menuScene(primaryStage, pane)
+        facade.showGrid.value = false
+        facade.showCollider.value = false
 
         facade.timeListenable.addEventListener(TimeListener(facade.elements, game, facade, this))
         facade.collisionsListenable.addEventListener(CollisionListener(game))
@@ -63,7 +65,7 @@ class Starships() : Application() {
     }
 
     private fun menuScene(primaryStage: Stage, pane: StackPane): Scene {
-        val title = Label("StarShips")
+        val title = Label("Navecitas")
 
         val newGame = Label("New Game")
         newGame.setOnMouseClicked {
@@ -201,6 +203,11 @@ class KeyPressedListener(
             map["left-1"] -> game.turnShip("starship-1", -5.0)
             map["right-1"] -> game.turnShip("starship-1", 5.0)
             map["shoot-1"] -> game.shoot("starship-1")
+            map["accelerate-2"] -> game.accelerateShip("starship-2", true)
+            map["stop-2"] -> game.accelerateShip("starship-2", false)
+            map["left-2"] -> game.turnShip("starship-2", -5.0)
+            map["right-2"] -> game.turnShip("starship-2", 5.0)
+            map["shoot-2"] -> game.shoot("starship-2")
             KeyCode.P ->{
                 game.pauseOrUnPause()
                if (game.isPaused){
