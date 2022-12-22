@@ -1,6 +1,7 @@
 package starShips.configuration;
 
 import javafx.scene.input.KeyCode;
+import starShips.model.Enums.Color;
 import starShips.model.Enums.ShotType;
 
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ public class GameConfig {
     private final int defaultLives;
     private final Map<String, KeyCode> keyBoardConfig;
     private final Map<String, ShotType> shotTypes;
+    private final Map<String, Color> shipColors;
 
     public GameConfig() {
         List<String> lines = getLinesFromFile();
@@ -24,11 +26,22 @@ public class GameConfig {
         defaultLives = Integer.parseInt(map.get("defaultLives"));
         keyBoardConfig = getKeyBoardConfigMap(map.get("keyBoardConfig"));
         shotTypes = getShotTypesMap(map.get("shotTypes"));
+        shipColors = getColorsMap(map.get("ships"));
+    }
+
+    private Map<String, Color> getColorsMap(String ships) {
+        Map<String, Color> map = new HashMap<>();
+        String[] split = ships.split(";");
+        for (String s : split) {
+            String[] innerSplit = s.split("=");
+            map.put(innerSplit[0], getColor(innerSplit[1]));
+        }
+        return map;
     }
 
     private Map<String, ShotType> getShotTypesMap(String shotTypes) {
         Map<String, ShotType> shotMap = new HashMap<>();
-        String[] split = shotTypes.split(",");
+        String[] split = shotTypes.split(";");
         for (String s : split){
             String[] innerSplit = s.split("=");
             shotMap.put(innerSplit[0], getShotType(innerSplit[1]));
@@ -38,15 +51,15 @@ public class GameConfig {
 
     private ShotType getShotType(String s) {
         return switch (s){
-            case "LASER" -> ShotType.LASER;
-            case "SPREAD" -> ShotType.SPREAD;
-            default -> ShotType.SHOT;
+            default -> ShotType.LASER;
+            case "LIGHTNING" -> ShotType.LIGHTNING;
+            case "PLASMA" -> ShotType.PLASMA;
         };
     }
 
     private Map<String, KeyCode> getKeyBoardConfigMap(String keyBoardConfig) {
         Map<String, KeyCode> buttonMap = new HashMap<>();
-        String[] split = keyBoardConfig.split(",");
+        String[] split = keyBoardConfig.split(";");
         for (String s : split){
             String[] innerSplit = s.split("=");
             buttonMap.put(innerSplit[0], getKeyCode(innerSplit[1]));
@@ -58,6 +71,9 @@ public class GameConfig {
         return KeyCode.getKeyCode(s);
     }
 
+    private Color getColor(String s) {
+        return s.equals("RED") ? Color.RED : Color.BLUE;
+    }
 
     private Map<String, String> getMap(List<String> lines) {
         Map<String, String> map = new HashMap<>();
@@ -98,4 +114,6 @@ public class GameConfig {
     public Map<String, ShotType> getShotTypes() {
         return shotTypes;
     }
+
+    public Map<String, Color> getColors() {return shipColors;}
 }

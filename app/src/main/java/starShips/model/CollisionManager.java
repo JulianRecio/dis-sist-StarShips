@@ -44,8 +44,6 @@ public class CollisionManager {
             ship = (Ship) entity1;
         }
 
-        if (ship.getId().equals(asteroid.getId())) return null;
-
         List<Entity> nextStateEntities = new ArrayList<>();
         List<Player> nextStatePlayers = new ArrayList<>();
         Player shipPlayer = getPlayer(ship.getPlayerId(), players);
@@ -55,7 +53,7 @@ public class CollisionManager {
             if (entity.getId().equals(ship.getId())){
                 nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives() - 1, shipPlayer.getPlayerShip());
                 if (nextStatePlayer.getLives() > 0){
-                    nextStateEntities.add(new Ship(ship.getId(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(),  ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
+                    nextStateEntities.add(new Ship(ship.getId(),300,300 , 180, ship.getHeight(), ship.getWidth(), 180, ship.getColor(), ship.getPlayerId(), ship.getShotType(), 0, ship.getPreviousShot()));
                 } else{
                     game.addEliminated(entity.getId());
                     nextStatePlayer = null;
@@ -106,7 +104,7 @@ public class CollisionManager {
             if (entity.getId().equals(ship.getId())){
                 nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives() - 1, shipPlayer.getPlayerShip());
                 if (nextStatePlayer.getLives() > 0){
-                    nextStateEntities.add(new Ship(ship.getId(), new Position(300,300 ), 180, 0, ship.getHeight(), ship.getWidth(), ship.getTrajectory(),  ship.getWeapon(), ship.getPlayerId(), ship.isAccelerating()));
+                    nextStateEntities.add(new Ship(ship.getId(),300,300 , 180, ship.getHeight(), ship.getWidth(), 180, ship.getColor(), ship.getPlayerId(), ship.getShotType(), 0, ship.getPreviousShot()));
                 } else{
                     game.addEliminated(entity.getId());
                     nextStatePlayer = null;
@@ -150,7 +148,7 @@ public class CollisionManager {
                 game.addEliminated(entity.getId());
             }
             if (entity.getId().equals(asteroid.getId())){
-                Asteroid newAsteroid = new Asteroid(asteroid.getId(), asteroid.getEntityPosition(), asteroid.getRotation(),asteroid.getSpeed(),asteroid.getHeight(),asteroid.getWidth(),asteroid.getIntegrity() - shot.getDamageOutput(), asteroid.isRotatesClockwise(), asteroid.getTrajectory());
+                Asteroid newAsteroid = new Asteroid(asteroid.getId(), asteroid.getX(), asteroid.getY(), asteroid.getRotation(),asteroid.getHeight(),asteroid.getWidth(), asteroid.getTrajectory(),asteroid.getIntegrity() - shot.getDamageOutput(), asteroid.isRotatesClockwise());
                 if (newAsteroid.getIntegrity() <= 0 ){
                     nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives(), shipPlayer.getPlayerShip());
                     game.addPoints(nextStatePlayer.getId(), newAsteroid.getPoints());
@@ -165,22 +163,21 @@ public class CollisionManager {
             }
         }
 
-        for (Player player :
-                players) {
-            if (player.getId().equals(shipPlayer.getId())){
+        for (Player player : players) {
+            if (player.getId().equals(shipPlayer.getId())) {
                 if (nextStatePlayer == null) continue;
+                nextStatePlayers.add(nextStatePlayer);
+            }
+            else{
                 nextStatePlayers.add(player.getNewPlayer());
             }
-
         }
-
         return new GameState(nextStateEntities, nextStatePlayers);
     }
 
     private static Player getPlayer(String shooterId, List<Player> players, List<Entity> entities) {
         String playerId = "";
-        for (Entity entity :
-                entities) {
+        for (Entity entity : entities) {
             if (entity.getType() == EntityType.SHIP && entity.getId().equals(shooterId)) {
                 Ship ship = (Ship) entity;
                 playerId = ship.getPlayerId();

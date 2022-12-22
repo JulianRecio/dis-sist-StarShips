@@ -15,6 +15,9 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import starShips.Game
+import starShips.model.Entities.Shot
+import starShips.model.Enums.Color
+import starShips.model.Enums.ShotType
 import kotlin.system.exitProcess
 
 fun main() {
@@ -27,9 +30,14 @@ class Starships() : Application() {
     private val keyTracker = KeyTracker()
 
     companion object {
-        val STARSHIP_P1 = ImageRef("starship1", 70.0, 70.0)
-        val STARSHIP_P2 = ImageRef("starship2", 70.0, 70.0)
-        val SHOT_IMG = ImageRef("shot",70.0,70.0)
+        val STARSHIP_RED = ImageRef("starship1", 70.0, 70.0)
+        val STARSHIP_BLUE = ImageRef("starship2", 70.0, 70.0)
+        val RED_SHOT_IMG = ImageRef("red_Shot",70.0,70.0)
+        val BLUE_SHOT_IMG = ImageRef("blue_Shot",70.0,70.0)
+        val RED_PLASMA_IMG = ImageRef("red_Plasma",70.0,70.0)
+        val BLUE_PLASMA_IMG = ImageRef("blue_Plasma",70.0,70.0)
+        val RED_LIGHTNING_IMG = ImageRef("red_Lightning",70.0,70.0)
+        val BLUE_LIGHTNING_IMG = ImageRef("blue_Lightning",70.0,70.0)
         val ASTEROID_IMG = ImageRef("asteroid", 70.0,70.0)
         val game = Game()
     }
@@ -38,6 +46,7 @@ class Starships() : Application() {
         
         val pane = gameScene()
         val menu = menuScene(primaryStage, pane)
+
         facade.showGrid.value = false
         facade.showCollider.value = false
 
@@ -56,12 +65,26 @@ class Starships() : Application() {
     }
 
     fun getImage(entity: Entity): ImageRef?{
-        if (entity.type == EntityType.SHIP){
-            return if (entity.id.equals("starship-1")) STARSHIP_P1
-            else STARSHIP_P2
+        if (entity.type == EntityType.SHIP) {
+            return if (entity.color == Color.RED) STARSHIP_RED
+            else STARSHIP_BLUE
         }
-        return if (entity.type == EntityType.SHOT) SHOT_IMG
-        else ASTEROID_IMG
+        return if (entity.type == EntityType.SHOT) {
+            var type = ShotType.LASER
+            if (entity is Shot){
+                type = entity.shotType
+            }
+            if (entity.color == Color.RED){
+                return if (type == ShotType.LIGHTNING) RED_LIGHTNING_IMG
+                else if (type == ShotType.PLASMA) RED_PLASMA_IMG
+                else RED_SHOT_IMG
+            }
+            else{
+                return if (type == ShotType.LIGHTNING) BLUE_LIGHTNING_IMG
+                else if (type == ShotType.PLASMA) BLUE_PLASMA_IMG
+                else BLUE_SHOT_IMG
+            }
+        } else ASTEROID_IMG
     }
 
     private fun menuScene(primaryStage: Stage, pane: StackPane): Scene {
@@ -74,14 +97,20 @@ class Starships() : Application() {
             addEntities()
         }
 
+        val loadGame = Label("Load Game")
+        loadGame.setOnMouseClicked {
+            primaryStage.scene.root = pane
+            game.start(true)
+            addEntities()
+        }
         val hLayout = HBox(70.0)
         hLayout.alignment = Pos.CENTER
-        hLayout.children.addAll(newGame)
+        hLayout.children.addAll(newGame, loadGame)
 
         val vLayout = VBox(50.0)
         vLayout.id = "menu"
         vLayout.alignment = Pos.CENTER
-        vLayout.children.addAll(title, newGame)
+        vLayout.children.addAll(title, hLayout)
 
         val menu = Scene(vLayout)
         menu.stylesheets.add(this::class.java.classLoader.getResource("styles.css")?.toString())
@@ -98,14 +127,25 @@ class Starships() : Application() {
             game.pauseOrUnPause()
         }
 
+        var saved = false
+        val saveGame = Label("Save game")
+        saveGame.setOnMouseClicked {
+            saveGame.textFill = javafx.scene.paint.Color.PURPLE
+            game.saveGame()
+            saved = true
+        }
+
         val exitGame = Label("Exit game")
         exitGame.setOnMouseClicked {
+            game.printLeaderboard()
             stop()
         }
+
+
         val vLayout = VBox(50.0)
         vLayout.id = "pause"
         vLayout.alignment = Pos.CENTER
-        vLayout.children.addAll(unpause, exitGame)
+        vLayout.children.addAll(unpause, saveGame, exitGame)
         return Scene(vLayout)
     }
 
@@ -114,7 +154,7 @@ class Starships() : Application() {
     private fun addEntities() {
         val entities = game.entities
         for (entity in entities){
-            facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x,entity.entityPosition.y,entity.height, entity.width, entity.rotation, readHitBox(entity.hitBoxType), getImage(entity))
+            facade.elements[entity.id] = ElementModel(entity.id, entity.x,entity.y,entity.height, entity.width, entity.rotation, readHitBox(entity.hitBoxType), getImage(entity))
         }
     }
 
@@ -150,21 +190,22 @@ class TimeListener(
 ) : EventListener<TimePassed> {
     override fun handle(event: TimePassed) {
         if (game.isOver){
+            game.printLeaderboard()
             starship.stop()
         }
         game.update()
-        val entities = game.entities ?: return;
+        val entities = game.entities ?: return
         for (entity in entities){
             val element = elements[entity.id]
             if (element != null){
-                element.x.set(entity.entityPosition.x)
-                element.y.set(entity.entityPosition.y)
+                element.x.set(entity.x)
+                element.y.set(entity.y)
                 element.rotationInDegrees.set(entity.rotation)
                 element.height.set(entity.height)
                 element.width.set(entity.width)
             }
             else{
-                facade.elements[entity.id] = ElementModel(entity.id, entity.entityPosition.x, entity.entityPosition.y, 5.0, 5.0,entity.rotation,starship.readHitBox(entity.hitBoxType), starship.getImage(entity))
+                facade.elements[entity.id] = ElementModel(entity.id, entity.x, entity.y, 5.0, 5.0,entity.rotation,starship.readHitBox(entity.hitBoxType), starship.getImage(entity))
             }
         }
         val eliminatedEntities = game.eliminated

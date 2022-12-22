@@ -1,101 +1,93 @@
 package starShips.model.Entities;
 
+import starShips.model.Enums.Color;
 import starShips.model.Enums.EntityType;
 import starShips.model.Enums.HitBoxType;
-import starShips.model.Position;
+import starShips.model.Enums.ShotType;
 
 public class Ship extends Entity {
 
-    private final Weapon weapon;
     private final String playerId;
-    private final boolean isAccelerating;
+    private final ShotType shotType;
+    private final double speed;
+    private final long previousShot;
 
-    public Ship(String id, Position entityPosition, double rotation, double speed, double height, double width, double trajectory, Weapon weapon, String playerId, boolean isAccelerating) {
-        super(id, EntityType.SHIP, entityPosition, rotation, speed, height, width, trajectory, HitBoxType.TRIANGULAR);
-        this.weapon = weapon;
+    public Ship(String id, double x, double y, double rotation, double height, double width,
+                double trajectory, Color color, String playerId, ShotType shotType, double speed,
+                long previousShot) {
+        super(id, EntityType.SHIP,HitBoxType.TRIANGULAR, x, y, rotation, height, width, trajectory,
+                 color);
         this.playerId = playerId;
-        this.isAccelerating = isAccelerating;
+        this.shotType = shotType;
+        this.speed = speed;
+        this.previousShot = previousShot;
     }
 
-    @Override
-    public Ship update() {
-        if (getSpeed() > 0){
-            double nextX =  getEntityPosition().getX() - 3.5 * Math.sin(Math.PI * 2 * getTrajectory() / 360);
-            double nextY =  getEntityPosition().getY() + 3.5 * Math.cos(Math.PI * 2 * getTrajectory() / 360);
-            if (!isInsideBounds(nextX, nextY)){
-                return new Ship(getId(), getEntityPosition(), getRotation(),0, getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-            }else{
-                return new Ship(getId(), new Position(nextX, nextY), getRotation(),getSpeed() - 5, getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-            }
+    public Ship move(boolean forward){
+        if (forward){
+            return accelerate();
+        }
+        else return decelerate();
+    }
+
+    private Ship accelerate() {
+        if (speed < 1000){
+            return new Ship(getId(), getX(), getY(), getRotation(), getHeight(), getWidth(), getTrajectory(), getColor(), getPlayerId(), getShotType(), speed + 70, getPreviousShot());
         }
         return getNewEntity();
     }
 
+    private Ship decelerate() {
+        if (speed > 0){
+            return new Ship(getId(), getX(), getY(), getRotation(), getHeight(), getWidth(), getTrajectory(), getColor(), getPlayerId(), getShotType(), speed - 170, getPreviousShot());
+        }
+        return getNewEntity();
+    }
+
+    public Ship turn(double rotation) {
+        return new Ship(getId(), getX(), getY(), getRotation() + rotation, getHeight(), getWidth(), getTrajectory() + rotation, getColor(), getPlayerId(), getShotType(), speed, getPreviousShot());
+    }
+
+    public Ship shoot(){
+        return new Ship(getId(), getX(), getY(), getRotation(), getHeight(), getWidth(), getTrajectory(), getColor(), getPlayerId(), getShotType(), getSpeed(), System.currentTimeMillis());
+    }
+
+    public boolean canShoot(){
+        return System.currentTimeMillis() - previousShot > 500;
+    }
+
+    @Override
+    public Ship update() {
+        if (speed > 0){
+            double nextX =  getX() - 3.5 * Math.sin(Math.PI * 2 * getTrajectory() / 360);
+            double nextY =  getY() + 3.5 * Math.cos(Math.PI * 2 * getTrajectory() / 360);
+            if (!isInsideBounds(nextX, nextY)){
+                return new Ship(getId(), getX(), getY(), getRotation(), getHeight(), getWidth(), getTrajectory(),  getColor(), getPlayerId(), getShotType(),0, getPreviousShot());
+            }else{
+                return new Ship(getId(), nextX, nextY, getRotation(), getHeight(), getWidth(), getTrajectory(),  getColor(), getPlayerId(), getShotType(),speed - 5, getPreviousShot());
+            }
+        }
+        return (Ship) getNewEntity();
+    }
+
     @Override
     public Ship getNewEntity() {
-        return new Ship(getId(), getEntityPosition(), getRotation(),getSpeed(), getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-    }
-
-    public Ship move(boolean moveForward){
-        if (moveForward){
-            return accelerate();
-        }else return decelerate();
-    }
-
-    private Ship decelerate() {
-        if (getSpeed() > 0) {
-            return new Ship(getId(), getEntityPosition(), getRotation(), getSpeed() - 170, getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-        }else return getNewEntity();
-    }
-
-    private Ship accelerate() {
-        if (getSpeed() < 1000) {
-            double currentSpeed = getSpeed() + 70;
-            return new Ship(getId(), getNextPosition(getEntityPosition(),currentSpeed) , getRotation(), currentSpeed, getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-        }else return getNewEntity();
-    }
-
-    private Position getNextPosition(Position entityPosition, double currentSpeed) {
-        double newX = 0;
-        double newY = 0;
-        double distance = currentSpeed * (0.01);
-        if (getRotation() >= 90 && getRotation() < 180 ){
-            newX = entityPosition.getX() - (distance);
-            newY = entityPosition.getY() - (distance);
-        }
-        if (getRotation() >= 0 && getRotation() < 90 ){
-            newX = entityPosition.getX() - (distance);
-            newY = entityPosition.getY() + (distance);
-        }
-        if (getRotation() >= 270 && getRotation() < 360 ){
-            newX = entityPosition.getX() + (distance);
-            newY = entityPosition.getY() + (distance);
-        }
-        if (getRotation() >= 180 && getRotation() < 270 ){
-            newX = entityPosition.getX() + (distance);
-            newY = entityPosition.getY() - (distance);
-        }
-
-        return new Position(newX,newY);
-    }
-
-    public Ship turn(double turnDegrees){
-        return new Ship(getId(), getEntityPosition(), getRotation() + turnDegrees, getSpeed(), getHeight(), getWidth(), getTrajectory(),  getWeapon(), playerId, isAccelerating());
-    }
-
-    public Ship useWeapon(){
-        return new Ship(getId(), getEntityPosition(), getRotation(), getSpeed(), getHeight(), getWidth(), getTrajectory(),  new Weapon(getWeapon().getShotType(), System.currentTimeMillis()), playerId, isAccelerating());
-    }
-
-    public boolean isAccelerating() {
-        return isAccelerating;
-    }
-
-    public Weapon getWeapon() {
-        return weapon;
+        return new Ship(getId(), getX(), getY(), getRotation(), getHeight(), getWidth(), getTrajectory(),  getColor(), getPlayerId(), getShotType(),speed, getPreviousShot());
     }
 
     public String getPlayerId() {
         return playerId;
+    }
+
+    public ShotType getShotType() {
+        return shotType;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public long getPreviousShot() {
+        return previousShot;
     }
 }

@@ -50,8 +50,7 @@ public class AsteroidGenerator {
         double height = 50;
         double width = 50;
         int integrity = getRandomIntegrity();
-        int speed = random.nextInt() * 7;
-        entities.add(new Asteroid(id,new Position(x,y), 180,speed, height, width, integrity, random.nextBoolean(), trajectory));
+        entities.add(new Asteroid(id,x,y, 180, height, width, trajectory, integrity, random.nextBoolean()));
     }
 
     private static int getRandomIntegrity() {
@@ -63,19 +62,17 @@ public class AsteroidGenerator {
     }
 
     private static double getDirection(double x, double y, Ship target) {
-        return Math.toDegrees(Math.atan2(target.getEntityPosition().getX() - x, target.getEntityPosition().getY()- y)) + 7 * random.nextDouble();
+        return Math.toDegrees(Math.atan2(target.getX() - x, target.getY()- y)) + 20 * random.nextDouble();
     }
 
     private static List<Ship> getShipsOnStage(List<Entity> entities) {
 
         List<Ship> shipList = new ArrayList<>();
 
-        for (Entity entity :
-                entities) {
+        for (Entity entity : entities) {
             if (entity.getType().equals(EntityType.SHIP)) shipList.add((Ship) entity);
 
         }
-
         return shipList;
     }
 }

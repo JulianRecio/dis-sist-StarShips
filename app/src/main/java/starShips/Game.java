@@ -15,11 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Game {
-    private GameConfig config;
-    private List<String> playerIds;
+    private final GameConfig config;
     private GameState gameState;
-    private Map<String, Integer> points;
-    private List<String> eliminated;
+    private final Map<String, Integer> points;
+    private final List<String> eliminated;
     private boolean isPaused;
     private boolean endGame;
 
@@ -55,7 +54,7 @@ public class Game {
     private List<Player> generateIds(GameConfig configuration) {
         int amount = configuration.getNumberOfPlayers();
         List<Player> players = new ArrayList<>();
-        for (int i = 0; i < amount; i++) {
+        for (int i = 1; i <= amount; i++) {
             players.add(new Player("player-" + i, configuration.getDefaultLives(), "starship-" + i+1));
         }
         return players;
@@ -63,7 +62,7 @@ public class Game {
 
 
     public void update() {
-        if (!isPaused && playerIds != null){
+        if (!isPaused && gameState != null){
             boolean hasShip = false;
             List<Entity> nextEntities = new ArrayList<>();
             boolean entered = false;
@@ -121,8 +120,8 @@ public class Game {
         for (Entity entity: getEntities()){
             if (entity.getId().equals(shipId)){
                 shooterShip = (Ship) entity;
-                if (shooterShip.getWeapon().isLoaded()){
-                    nextStateEntities.add(shooterShip.useWeapon());
+                if (shooterShip.canShoot()){
+                    nextStateEntities.add(shooterShip.shoot());
                 }
                 else {
                     nextStateEntities.add(shooterShip.getNewEntity());
@@ -132,7 +131,7 @@ public class Game {
                 nextStateEntities.add(entity.getNewEntity());
             }
         }
-        if (shooterShip != null && shooterShip.getWeapon().isLoaded()){
+        if (shooterShip != null && shooterShip.canShoot()){
             nextStateEntities.add(ShotGenerator.shoot(shooterShip));
         }
         updateGameState(nextStateEntities, getNewPlayers());
@@ -148,9 +147,10 @@ public class Game {
 
     private void handleAsteroidSpawn(List<Entity> nextEntities) {
         List<Asteroid> asteroids = new ArrayList<>();
-        for (Entity entity :
-                getEntities()) {
-            asteroids.add((Asteroid) entity);
+        for (Entity entity : getEntities()) {
+            if (entity.getType() == EntityType.ASTEROID){
+                asteroids.add((Asteroid) entity);
+            }
         }
         AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities);
     }
@@ -164,24 +164,12 @@ public class Game {
         this.endGame = true;
     }
 
-    public List<String> getPlayerIds() {
-        return playerIds;
-    }
-
     public Map<String, Integer> getPoints() {
         return points;
     }
 
     public boolean isPaused() {
         return isPaused;
-    }
-
-    public GameConfig getConfig() {
-        return config;
-    }
-
-    public GameState getGameState() {
-        return gameState;
     }
 
     public List<String> getEliminated() {
@@ -224,5 +212,16 @@ public class Game {
 
     public void pauseOrUnPause() {
         this.isPaused = !isPaused;
+    }
+
+    public void saveGame() {
+        GameConfigHandler.saveGame(gameState);
+    }
+
+    public void printLeaderboard() {
+        if (getPlayers() != null){
+            System.out.println("LEADERBOARD");
+            points.forEach((key, value) -> System.out.println(key  + " = " + value + " points"));
+        }
     }
 }

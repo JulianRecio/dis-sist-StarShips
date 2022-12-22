@@ -1,44 +1,42 @@
 package starShips.model.Entities;
 
+import starShips.model.Enums.Color;
 import starShips.model.Enums.EntityType;
 import starShips.model.Enums.HitBoxType;
-import starShips.model.Position;
 
 public abstract class Entity {
 
-    private String id;
+    private  final String id;
 
-    private EntityType type;
+    private  final EntityType type;
 
-    private Position entityPosition;
+    private final double x;
 
-    private double rotation;
+    private final double y;
 
-    private double speed;
+    private final double rotation;
 
-    private double height;
+    private final double height;
 
-    private double width;
+    private final double width;
 
-    private double trajectory;
+    private final double trajectory;
 
-    private HitBoxType hitBoxType;
+    private final HitBoxType hitBoxType;
 
-    public Entity(String id, EntityType type, Position entityPosition, double rotation, double speed,double height, double width, double trajectory, HitBoxType hitBoxType) {
+    private final Color color;
+
+    public Entity(String id, EntityType type,HitBoxType hitBoxType,double x, double y, double rotation, double height, double width, double trajectory,  Color color) {
         this.id = id;
         this.type = type;
-        this.entityPosition = entityPosition;
+        this.x = x;
+        this.y = y;
         this.rotation = rotation;
-        this.speed = speed;
         this.height = height;
         this.width = width;
         this.trajectory = trajectory;
         this.hitBoxType = hitBoxType;
-    }
-
-    public Entity(String id, EntityType type) {
-        this.id = id;
-        this.type = type;
+        this.color = color;
     }
 
     public String getId() {
@@ -49,16 +47,16 @@ public abstract class Entity {
         return type;
     }
 
-    public Position getEntityPosition() {
-        return entityPosition;
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public double getRotation() {
         return rotation;
-    }
-
-    public double getSpeed() {
-        return speed;
     }
 
     public double getHeight() {
@@ -78,11 +76,15 @@ public abstract class Entity {
     }
 
     public boolean isInsideBounds(){
-        return entityPosition.getX() > 0 && entityPosition.getX() < 800 && entityPosition.getY() > 0 && entityPosition.getY() < 800;
+        return getX() > 0 && getX() < 800 && getY() > 0 && getY() < 800;
     }
 
     public boolean isInsideBounds(double x,double y){
         return x > 0 && x < 725 && y > 0 && y < 700;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     public abstract Entity update();
