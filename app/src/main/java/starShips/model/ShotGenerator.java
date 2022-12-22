@@ -18,11 +18,11 @@ public class ShotGenerator {
                 (int) 100);
     }
     private static double[] getSpecificValues(Ship ship, double n){
-       // return switch (ship.getShotType()){
-       //     case LASER-> new double[]{ship.getRotation(), n*5, n*2};
-       //     case LIGHTNING -> new double[]{ship.getRotation()-20, n*12, n*4};
-       //     case PLASMA -> new double[]{ship.getRotation(), n*7, n*7};
-       // };
-        return new double[]{ship.getRotation(), n*5, n*2};
+        return switch (ship.getShotType()){
+            case LASER-> new double[]{ship.getRotation(), n*5, n*2};
+            case LIGHTNING -> new double[]{ship.getRotation()-20, n*12, n*4};
+            case PLASMA -> new double[]{ship.getRotation(), n*7, n*7};
+        };
+        //return new double[]{ship.getRotation(), n*5, n*2};
     }
 }

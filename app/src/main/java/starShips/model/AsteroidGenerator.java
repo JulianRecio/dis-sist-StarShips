@@ -24,7 +24,7 @@ public class AsteroidGenerator {
         double y;
         Ship target = getRandomShip(ships, random);
         if (target == null) return;
-        int side = random.nextInt(4);
+        int side = random.nextInt(5);
         double position = 800 * random.nextDouble();
         switch (side){
             case 0 -> {
@@ -46,8 +46,8 @@ public class AsteroidGenerator {
         }
         double trajectory = getDirection(x,y, target, random);
         String id = "asteroid-" + ++asteroidCount;
-        double height = 50;
-        double width = 50;
+        double height = 50 + random.nextDouble()*10;
+        double width = 50 + random.nextDouble()*10;
         int integrity = getRandomIntegrity(random);
         entities.add(new Asteroid(id,x,y, 180, height, width, trajectory, integrity, random.nextBoolean()));
     }

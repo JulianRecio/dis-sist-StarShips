@@ -8,7 +8,6 @@ import starShips.model.Entities.Asteroid;
 import starShips.model.Entities.Entity;
 import starShips.model.Entities.Ship;
 import starShips.model.Enums.EntityType;
-
 import java.util.*;
 
 public class Game {
@@ -18,14 +17,14 @@ public class Game {
     private final List<String> eliminated;
     private boolean isPaused;
     private boolean endGame;
-    private final Random random;
+    private final Random seed;
 
     public Game() {
         this.config = new GameConfig();
         this.eliminated = new ArrayList<>();
         this.isPaused = false;
         this.points = new HashMap<>();
-        random = new Random();
+        seed = new Random();
     }
 
     public void start(boolean startFromSaveFile) {
@@ -131,7 +130,7 @@ public class Game {
             }
         }
         if (shooterShip != null && shooterShip.canShoot()){
-            nextStateEntities.add(ShotGenerator.shoot(shooterShip, random));
+            nextStateEntities.add(ShotGenerator.shoot(shooterShip, seed));
         }
         updateGameState(nextStateEntities, getNewPlayers());
     }
@@ -151,7 +150,7 @@ public class Game {
                 asteroids.add((Asteroid) entity);
             }
         }
-        AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities, random);
+        AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities, seed);
     }
 
     public void handleCollision(String id1, String id2){
