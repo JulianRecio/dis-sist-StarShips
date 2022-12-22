@@ -150,7 +150,7 @@ public class CollisionManager {
             if (entity.getId().equals(asteroid.getId())){
                 Asteroid newAsteroid = new Asteroid(asteroid.getId(), asteroid.getX(), asteroid.getY(), asteroid.getRotation(),asteroid.getHeight(),asteroid.getWidth(), asteroid.getTrajectory(),asteroid.getIntegrity() - shot.getDamageOutput(), asteroid.isRotatesClockwise());
                 if (newAsteroid.getIntegrity() <= 0 ){
-                    nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints(), shipPlayer.getLives(), shipPlayer.getPlayerShip());
+                    nextStatePlayer = new Player(shipPlayer.getId(), shipPlayer.getPoints() + newAsteroid.getPoints(), shipPlayer.getLives(), shipPlayer.getPlayerShip());
                     game.addPoints(nextStatePlayer.getId(), newAsteroid.getPoints());
                     game.addEliminated(entity.getId());
                 }else{

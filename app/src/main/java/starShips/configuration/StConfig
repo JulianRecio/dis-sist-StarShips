@@ -1,4 +1,4 @@
-numberOfPlayers:1
+numberOfPlayers:2
 defaultLives:3
 keyBoardConfig:accelerate-1=W;stop-1=S;left-1=A;right-1=D;shoot-1=H;accelerate-2=Up;stop-2=Down;left-2=Left;right-2=Right;shoot-2=Space
 ships:color-1=RED;color-2=BLUE

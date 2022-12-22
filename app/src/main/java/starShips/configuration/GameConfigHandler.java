@@ -80,7 +80,7 @@ public class GameConfigHandler {
         List<String> p = null;
         for (int i = 0; i < configLines.size(); i++) {
             String line = configLines.get(i);
-            if (line.equals("%")){
+            if (line.equals("")){
                 e = configLines.subList(0, i);
                 p = configLines.subList(i+1, configLines.size());
                 break;
@@ -175,14 +175,12 @@ public class GameConfigHandler {
     }
 
     private static List<String> getLinesFromFile(){
-        List<String> lines =new ArrayList<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(getDirectory()));
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(getDirectory()))){
             String line;
-            while ((line = br.readLine()) != null){
+            while ((line = reader.readLine()) != null){
                 lines.add(line);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

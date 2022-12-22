@@ -4,3 +4,15 @@
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
+#menu {
+    -fx-background-image: url("main_menu_background.png");
+    -fx-background-repeat: stretch;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+#pause {
+    -fx-background-image: url("pause_menu_background.png");
+    -fx-background-repeat: stretch;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}

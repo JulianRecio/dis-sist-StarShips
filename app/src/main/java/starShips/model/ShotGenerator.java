@@ -15,16 +15,15 @@ public class ShotGenerator {
         double n =  2 + (5-2) * r.nextDouble();
         double[] values = getSpecificValues(ship, n);
         return new Shot(id,ship.getX()+16, ship.getY(), values[0], values[1], values[2],
-                ship.getRotation(), ship.getColor(), ship.getPlayerId(),ship.getShotType(),
-                (int) (n*13));
+                ship.getRotation(), ship.getColor(), ship.getId(),ShotType.LASER,
+                (int) 100);
     }
     private static double[] getSpecificValues(Ship ship, double n){
-        ShotType type = ship.getShotType();
-        if (ship.getShotType() == null){type = ShotType.LASER;}
-        return switch (type){
-            case LASER-> new double[]{ship.getRotation(), n*5, n*2};
-            case LIGHTNING -> new double[]{ship.getRotation()-20, n*12, n*4};
-            case PLASMA -> new double[]{ship.getRotation(), n*7, n*7};
-        };
+       // return switch (ship.getShotType()){
+       //     case LASER-> new double[]{ship.getRotation(), n*5, n*2};
+       //     case LIGHTNING -> new double[]{ship.getRotation()-20, n*12, n*4};
+       //     case PLASMA -> new double[]{ship.getRotation(), n*7, n*7};
+       // };
+        return new double[]{ship.getRotation(), n*5, n*2};
     }
 }

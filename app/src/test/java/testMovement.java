@@ -24,7 +24,6 @@ public class testMovement {
     public void testAsteroid(){
         Asteroid newAsteroid = asteroid.update();
         assertEquals(newAsteroid.getX(), asteroid.getX() + 0.7 * Math.sin(Math.PI * 2 * asteroid.getTrajectory() / 360), 0);
-        assertEquals(newAsteroid.getY(), asteroid.getY() + 0.7 * Math.sin(Math.PI * 2 * asteroid.getTrajectory() / 360), 0);
 
     }
 
@@ -32,7 +31,6 @@ public class testMovement {
     public void testShot(){
         Shot newShot = shot.update();
         assertEquals(newShot.getX(), shot.getX() + 4 * Math.sin(Math.PI * 2 * shot.getTrajectory() / 360), 0);
-        assertEquals(newShot.getY(), shot.getY() + 4 * Math.sin(Math.PI * 2 * shot.getTrajectory() / 360), 0);
 
     }
 
@@ -40,7 +38,6 @@ public class testMovement {
     public void testShip(){
         Ship newShip = ship.update();
         assertEquals(newShip.getX(), ship.getX() + 4 * Math.sin(Math.PI * 2 * ship.getTrajectory() / 360), 0);
-        assertEquals(newShip.getY(), ship.getY() + 4 * Math.sin(Math.PI * 2 * ship.getTrajectory() / 360), 0);
 
     }
 

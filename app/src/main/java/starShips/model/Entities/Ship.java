@@ -53,7 +53,7 @@ public class Ship extends Entity {
     }
 
     public boolean canShoot(){
-        return System.currentTimeMillis() - previousShot > 500;
+        return System.currentTimeMillis() - previousShot > 250;
     }
 
     @Override

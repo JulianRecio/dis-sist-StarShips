@@ -19,7 +19,7 @@ public class EntitiesGenerator {
     private static void addShips(List<Entity> objects, int amountOfShips, List<Player> players, GameConfig gameConfiguration){
         Map<String, ShotType> shotTypes = gameConfiguration.getShotTypes();
         Map<String, Color> shipColors = gameConfiguration.getColors();
-        for (int i = 1; i < amountOfShips+1; i++) {
+        for (int i = 1; i <= amountOfShips ; i++) {
             String id = "starship-" + i;
             double xPosition = ((800 / amountOfShips) * i)/2;
             Player player = players.get(i-1);

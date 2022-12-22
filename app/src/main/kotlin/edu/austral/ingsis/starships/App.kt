@@ -7,6 +7,7 @@ import edu.austral.ingsis.starships.ui.*
 import javafx.application.Application
 import javafx.application.Application.launch
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.control.Label
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
@@ -89,19 +90,40 @@ class Starships() : Application() {
 
     private fun menuScene(primaryStage: Stage, pane: StackPane): Scene {
         val title = Label("Navecitas")
+        title.textFill = javafx.scene.paint.Color.YELLOW
+        title.style = "-fx-font-family: VT323; -fx-font-size: 100;"
 
         val newGame = Label("New Game")
+        newGame.textFill = javafx.scene.paint.Color.YELLOW
+        newGame.style = "-fx-font-family: VT323; -fx-font-size: 50"
         newGame.setOnMouseClicked {
             primaryStage.scene.root = pane
             game.start(false)
             addEntities()
         }
+        newGame.setOnMouseEntered {
+            newGame.textFill = javafx.scene.paint.Color.MEDIUMPURPLE
+            newGame.cursor = Cursor.HAND
+        }
 
+        newGame.setOnMouseExited {
+            newGame.textFill = javafx.scene.paint.Color.YELLOW
+        }
         val loadGame = Label("Load Game")
+        loadGame.textFill = javafx.scene.paint.Color.YELLOW
+        loadGame.style = "-fx-font-family: VT323; -fx-font-size: 50;"
         loadGame.setOnMouseClicked {
             primaryStage.scene.root = pane
             game.start(true)
             addEntities()
+        }
+        loadGame.setOnMouseEntered {
+            loadGame.textFill = javafx.scene.paint.Color.MEDIUMPURPLE
+            loadGame.cursor = Cursor.HAND
+        }
+
+        loadGame.setOnMouseExited {
+            loadGame.textFill = javafx.scene.paint.Color.YELLOW
         }
         val hLayout = HBox(70.0)
         hLayout.alignment = Pos.CENTER
@@ -120,33 +142,70 @@ class Starships() : Application() {
 
     fun pauseScene(primaryStage: Stage, pane: StackPane, menu: Scene): Scene {
         val unpause = Label("Continue Game")
-
+        unpause.textFill = javafx.scene.paint.Color.YELLOW
+        unpause.style = "-fx-font-family: VT323; -fx-font-size: 50"
         unpause.setOnMouseClicked {
             primaryStage.scene = menu
             primaryStage.scene.root = pane
             game.pauseOrUnPause()
         }
+        unpause.setOnMouseEntered {
+            unpause.textFill = javafx.scene.paint.Color.MEDIUMPURPLE
+            unpause.cursor = Cursor.HAND
+        }
+
+        unpause.setOnMouseExited {
+            unpause.textFill = javafx.scene.paint.Color.YELLOW
+        }
 
         var saved = false
         val saveGame = Label("Save game")
+        saveGame.textFill = javafx.scene.paint.Color.YELLOW
+        saveGame.style = "-fx-font-family: VT323; -fx-font-size: 50;"
         saveGame.setOnMouseClicked {
             saveGame.textFill = javafx.scene.paint.Color.PURPLE
             game.saveGame()
             saved = true
         }
+        saveGame.setOnMouseEntered {
+            if (!saved){
+                saveGame.textFill = javafx.scene.paint.Color.MEDIUMPURPLE
+                saveGame.cursor = Cursor.HAND
+            }
+        }
+
+        saveGame.setOnMouseExited {
+            if (saved){
+                saveGame.textFill = javafx.scene.paint.Color.PURPLE
+            }
+            else{
+                saveGame.textFill = javafx.scene.paint.Color.YELLOW
+            }
+        }
 
         val exitGame = Label("Exit game")
+        exitGame.textFill = javafx.scene.paint.Color.YELLOW
+        exitGame.style = "-fx-font-family: VT323; -fx-font-size: 50;"
         exitGame.setOnMouseClicked {
             game.printLeaderboard()
             stop()
         }
+        exitGame.setOnMouseEntered {
+            exitGame.textFill = javafx.scene.paint.Color.MEDIUMPURPLE
+            exitGame.cursor = Cursor.HAND
+        }
 
+        exitGame.setOnMouseExited {
+            exitGame.textFill = javafx.scene.paint.Color.YELLOW
+        }
 
         val vLayout = VBox(50.0)
         vLayout.id = "pause"
         vLayout.alignment = Pos.CENTER
         vLayout.children.addAll(unpause, saveGame, exitGame)
-        return Scene(vLayout)
+        val  pause = Scene(vLayout)
+        pause.stylesheets.add(this::class.java.classLoader.getResource("styles.css")?.toString())
+        return pause
     }
 
 
@@ -219,11 +278,10 @@ class TimeListener(
 }
 
 
-class CollisionListener(
-    private val game: Game
-) : EventListener<Collision> {
+class CollisionListener(private val game: Game) : EventListener<Collision> {
     override fun handle(event: Collision) {
         println("${event.element1Id} ${event.element2Id}")
+        game.handleCollision(event.element1Id, event.element2Id)
     }
 
 }
@@ -257,8 +315,6 @@ class KeyPressedListener(
             }
             else ->{}
         }
-
-
     }
 
 }

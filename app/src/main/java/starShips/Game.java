@@ -55,7 +55,7 @@ public class Game {
         int amount = configuration.getNumberOfPlayers();
         List<Player> players = new ArrayList<>();
         for (int i = 1; i <= amount; i++) {
-            players.add(new Player("player-" + i, configuration.getDefaultLives(), "starship-" + i+1));
+            players.add(new Player("player-" + i, configuration.getDefaultLives(), "starship-" + i));
         }
         return players;
     }
@@ -155,6 +155,19 @@ public class Game {
         AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities);
     }
 
+    public void handleCollision(String id1, String id2){
+        Entity entity1 = null;
+        Entity entity2 = null;
+        for (Entity entity : getEntities()){
+            if (entity.getId().equals(id1)) entity1 = entity;
+            if (entity.getId().equals(id2)) entity2 = entity;
+        }
+        if(entity1 != null && entity2 != null){
+            this.gameState = CollisionManager.manageCollision(entity1, entity2, gameState, this);
+        }else {
+            updateGameState(getNewEntities(), getNewPlayers());
+        }
+    }
     public void addPoints(String id, int addPoints) {
         int addedPoints = points.get(id) + addPoints;
         points.put(id,addedPoints);
