@@ -1,8 +1,8 @@
-id:starship-2;type:SHIP;x:498.9098212129264;y:498.9098212129264;rotation:355.0;trajectory:355.0;height:40.0;width:40.0;hitBox:TRIANGULAR;color:BLUE;previousShot:1671716062153;playerId:player-2;speed:0.0;shotType:null
-id:asteroid-28;type:ASTEROID;x:33.338230625090375;y:33.338230625090375;rotation:278.0;trajectory:103.60022515518384;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:4
-id:asteroid-27;type:ASTEROID;x:69.14699678605415;y:69.14699678605415;rotation:384.0;trajectory:75.56827994058777;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:0
-id:asteroid-25;type:ASTEROID;x:158.58294585918884;y:158.58294585918884;rotation:648.0;trajectory:75.50050624769582;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:1
-id:asteroid-23;type:ASTEROID;x:267.5100414599127;y:267.5100414599127;rotation:-1164.0;trajectory:145.34133094719348;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:false;integrity:4
-id:asteroid-14;type:ASTEROID;x:391.3313036026894;y:391.3313036026894;rotation:1832.0;trajectory:137.4051667780887;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:0
+id:starship-1;type:SHIP;x:314.57019588222767;y:314.57019588222767;rotation:200.0;trajectory:200.0;height:40.0;width:40.0;hitBox:TRIANGULAR;color:RED;previousShot:1671720054143;playerId:player-1;speed:0.0;shotType:null
+id:asteroid-172;type:ASTEROID;x:540.7726205043069;y:540.7726205043069;rotation:620.0;trajectory:-23.202536041311546;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:3
+id:asteroid-171;type:ASTEROID;x:132.01619196600777;y:132.01619196600777;rotation:-290.0;trajectory:126.62761264835693;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:false;integrity:2
+id:asteroid-165;type:ASTEROID;x:394.1763075974688;y:394.1763075974688;rotation:1312.0;trajectory:-9.093618048096912;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:1
+id:asteroid-162;type:ASTEROID;x:524.0782560573653;y:524.0782560573653;rotation:-1340.0;trajectory:99.89994077672398;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:false;integrity:4
+id:asteroid-156;type:ASTEROID;x:297.65067588231284;y:297.65067588231284;rotation:1806.0;trajectory:31.53504529614348;height:50.0;width:50.0;hitBox:ELLIPTICAL;color:RED;rotatesClockwise:true;integrity:2
 
-id:player-2;points:0;lives:3;playerShip:starship-2
+id:player-1;points:55000;lives:1;playerShip:starship-1

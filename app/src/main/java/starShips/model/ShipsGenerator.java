@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class EntitiesGenerator {
+public class ShipsGenerator {
     public static List<Entity> generate(int amountOfShips, List<Player> players, GameConfig gameConfiguration){
         List<Entity> objects = new ArrayList<>();
         addShips(objects, amountOfShips, players, gameConfiguration);

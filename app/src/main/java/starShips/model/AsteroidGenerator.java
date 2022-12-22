@@ -11,19 +11,18 @@ import java.util.Random;
 
 public class AsteroidGenerator {
     private static int asteroidCount = 0;
-    static Random random = new Random();
 
-    public static void handleAsteroidSpawn(List<Asteroid> asteroids, List<Entity> entities) {
+    public static void handleAsteroidSpawn(List<Asteroid> asteroids, List<Entity> entities, Random random) {
         if (asteroids.size() < 5) {
-            createNewAsteroid(entities);
+            createNewAsteroid(entities, random);
         }
     }
 
-    private static void createNewAsteroid(List<Entity> entities) {
+    private static void createNewAsteroid(List<Entity> entities, Random random) {
         List<Ship> ships = getShipsOnStage(entities);
         double x ;
         double y;
-        Ship target = getRandomShip(ships);
+        Ship target = getRandomShip(ships, random);
         if (target == null) return;
         int side = random.nextInt(4);
         double position = 800 * random.nextDouble();
@@ -45,23 +44,23 @@ public class AsteroidGenerator {
                 y = position;
             }
         }
-        double trajectory = getDirection(x,y, target);
+        double trajectory = getDirection(x,y, target, random);
         String id = "asteroid-" + ++asteroidCount;
         double height = 50;
         double width = 50;
-        int integrity = getRandomIntegrity();
+        int integrity = getRandomIntegrity(random);
         entities.add(new Asteroid(id,x,y, 180, height, width, trajectory, integrity, random.nextBoolean()));
     }
 
-    private static int getRandomIntegrity() {
+    private static int getRandomIntegrity(Random random) {
         return random.nextInt(6);
     }
 
-    private static Ship getRandomShip(List<Ship> ships) {
+    private static Ship getRandomShip(List<Ship> ships, Random random) {
         return ships.isEmpty() ? null : ships.get(random.nextInt(ships.size()));
     }
 
-    private static double getDirection(double x, double y, Ship target) {
+    private static double getDirection(double x, double y, Ship target, Random random) {
         return Math.toDegrees(Math.atan2(target.getX() - x, target.getY()- y)) + 20 * random.nextDouble();
     }
 

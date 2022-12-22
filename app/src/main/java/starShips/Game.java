@@ -9,10 +9,7 @@ import starShips.model.Entities.Entity;
 import starShips.model.Entities.Ship;
 import starShips.model.Enums.EntityType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Game {
     private final GameConfig config;
@@ -21,12 +18,14 @@ public class Game {
     private final List<String> eliminated;
     private boolean isPaused;
     private boolean endGame;
+    private final Random random;
 
     public Game() {
         this.config = new GameConfig();
         this.eliminated = new ArrayList<>();
         this.isPaused = false;
         this.points = new HashMap<>();
+        random = new Random();
     }
 
     public void start(boolean startFromSaveFile) {
@@ -48,7 +47,7 @@ public class Game {
 
     private void startNewGame() {
         List<Player> players = generateIds(config);
-        this.gameState = new GameState(EntitiesGenerator.generate(players.size(), players, config), players);
+        this.gameState = new GameState(ShipsGenerator.generate(players.size(), players, config), players);
     }
 
     private List<Player> generateIds(GameConfig configuration) {
@@ -132,7 +131,7 @@ public class Game {
             }
         }
         if (shooterShip != null && shooterShip.canShoot()){
-            nextStateEntities.add(ShotGenerator.shoot(shooterShip));
+            nextStateEntities.add(ShotGenerator.shoot(shooterShip, random));
         }
         updateGameState(nextStateEntities, getNewPlayers());
     }
@@ -152,7 +151,7 @@ public class Game {
                 asteroids.add((Asteroid) entity);
             }
         }
-        AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities);
+        AsteroidGenerator.handleAsteroidSpawn(asteroids, nextEntities, random);
     }
 
     public void handleCollision(String id1, String id2){

@@ -9,9 +9,8 @@ import java.util.Random;
 public class ShotGenerator {
     private static int count = 0;
 
-    public static Shot shoot(Ship ship){
+    public static Shot shoot(Ship ship, Random r){
         String id = "shot-" + ++count;
-        Random r = new Random();
         double n =  2 + (5-2) * r.nextDouble();
         double[] values = getSpecificValues(ship, n);
         return new Shot(id,ship.getX()+16, ship.getY(), values[0], values[1], values[2],
